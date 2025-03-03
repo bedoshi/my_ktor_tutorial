@@ -25,8 +25,6 @@ repositories {
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
-
     // Ktor Core
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
@@ -50,7 +48,12 @@ dependencies {
 
     // Testing
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+
+    // Kotlin テスト依存関係
+    testImplementation("org.jetbrains.kotlin:kotlin-test:2.1.10")
+    // JUnit 5の依存関係をBOMを使って統一
+    testImplementation(platform("org.junit:junit-bom:5.9.3"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
 tasks.test {
