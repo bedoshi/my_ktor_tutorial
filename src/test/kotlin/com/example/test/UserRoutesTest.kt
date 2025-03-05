@@ -3,18 +3,28 @@ package com.example.test
 import com.example.models.User
 import com.example.plugins.configureRouting
 import com.example.plugins.configureSerialization
+import com.example.clearUsersForTest
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import kotlinx.serialization.json.Json
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class UserRoutesTest {
+
+    @BeforeEach
+    fun setup() {
+        // 各テスト実行前にユーザーリストをクリア
+        clearUsersForTest()
+    }
     @Test
+    @Order(1)
     fun testGetUsersEmpty() = testApplication {
         application {
             configureRouting()
@@ -23,7 +33,9 @@ class UserRoutesTest {
 
         client.get("/users").apply {
             assertEquals(HttpStatusCode.OK, status)
-            assertEquals("[]", bodyAsText())
+            val response = bodyAsText()
+            val users = Json.decodeFromString<List<User>>(response)
+            assertTrue(users.isEmpty())
         }
     }
 

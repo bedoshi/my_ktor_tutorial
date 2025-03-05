@@ -11,6 +11,12 @@ import io.ktor.server.routing.*
 private val users = mutableListOf<User>()
 private var userIdCounter = 1
 
+// テスト用にユーザーリストをクリアする関数
+fun clearUsersForTest() {
+    users.clear()
+    userIdCounter = 1
+}
+
 fun Route.userRoutes() {
     route("/users") {
         // 全ユーザーの取得
