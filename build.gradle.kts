@@ -54,6 +54,11 @@ dependencies {
     // JUnit 5の依存関係をBOMを使って統一
     testImplementation(platform("org.junit:junit-bom:5.9.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+
+    // Athenz ZPE
+    implementation("io.ktor:ktor-server-auth:2.0.0")
+    implementation("io.ktor:ktor-server-auth-jwt:2.0.0")
+    implementation("com.yahoo.athenz:athenz-zpe-lib:1.10.0")
 }
 
 tasks.test {
