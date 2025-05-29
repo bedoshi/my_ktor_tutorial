@@ -1,9 +1,7 @@
 package com.example.test
 
 import com.example.models.User
-import com.example.plugins.configureRouting
 import com.example.plugins.configureSerialization
-import com.example.clearUsersForTest
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -20,14 +18,15 @@ class UserRoutesTest {
 
     @BeforeEach
     fun setup() {
-        // 各テスト実行前にユーザーリストをクリア
-        clearUsersForTest()
+        // 各テスト実行前にデータベースをクリア
+        TestDatabaseConfig.init()
+        TestDatabaseConfig.clearDatabase()
     }
     @Test
     @Order(1)
     fun testGetUsersEmpty() = testApplication {
         application {
-            configureRouting()
+            configureTestRouting()
             configureSerialization()
         }
 
@@ -42,7 +41,7 @@ class UserRoutesTest {
     @Test
     fun testCreateUser() = testApplication {
         application {
-            configureRouting()
+            configureTestRouting()
             configureSerialization()
         }
 
@@ -66,7 +65,7 @@ class UserRoutesTest {
     @Test
     fun testGetUserById() = testApplication {
         application {
-            configureRouting()
+            configureTestRouting()
             configureSerialization()
         }
 
@@ -94,7 +93,7 @@ class UserRoutesTest {
     @Test
     fun testGetUserNotFound() = testApplication {
         application {
-            configureRouting()
+            configureTestRouting()
             configureSerialization()
         }
 
@@ -106,7 +105,7 @@ class UserRoutesTest {
     @Test
     fun testUpdateUser() = testApplication {
         application {
-            configureRouting()
+            configureTestRouting()
             configureSerialization()
         }
 
@@ -145,7 +144,7 @@ class UserRoutesTest {
     @Test
     fun testDeleteUser() = testApplication {
         application {
-            configureRouting()
+            configureTestRouting()
             configureSerialization()
         }
 
@@ -172,7 +171,7 @@ class UserRoutesTest {
     @Test
     fun testGetAllUsers() = testApplication {
         application {
-            configureRouting()
+            configureTestRouting()
             configureSerialization()
         }
 
@@ -199,7 +198,7 @@ class UserRoutesTest {
     @Test
     fun testUpdateUserNotFound() = testApplication {
         application {
-            configureRouting()
+            configureTestRouting()
             configureSerialization()
         }
 
@@ -215,7 +214,7 @@ class UserRoutesTest {
     @Test
     fun testDeleteUserNotFound() = testApplication {
         application {
-            configureRouting()
+            configureTestRouting()
             configureSerialization()
         }
 
@@ -228,7 +227,7 @@ class UserRoutesTest {
     @Test
     fun testCreateUserInvalidJson() = testApplication {
         application {
-            configureRouting()
+            configureTestRouting()
             configureSerialization()
         }
 
@@ -244,7 +243,7 @@ class UserRoutesTest {
     @Test
     fun testGetUserInvalidIdFormat() = testApplication {
         application {
-            configureRouting()
+            configureTestRouting()
             configureSerialization()
         }
 
@@ -257,7 +256,7 @@ class UserRoutesTest {
     @Test
     fun testUpdateUserInvalidIdFormat() = testApplication {
         application {
-            configureRouting()
+            configureTestRouting()
             configureSerialization()
         }
 
@@ -273,7 +272,7 @@ class UserRoutesTest {
     @Test
     fun testDeleteUserInvalidIdFormat() = testApplication {
         application {
-            configureRouting()
+            configureTestRouting()
             configureSerialization()
         }
 
@@ -286,7 +285,7 @@ class UserRoutesTest {
     @Test
     fun testUpdateUserInvalidJson() = testApplication {
         application {
-            configureRouting()
+            configureTestRouting()
             configureSerialization()
         }
 

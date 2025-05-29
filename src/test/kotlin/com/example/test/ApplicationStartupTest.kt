@@ -1,6 +1,5 @@
 package com.example.test
 
-import com.example.plugins.configureRouting
 import com.example.plugins.configureSerialization
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -15,13 +14,14 @@ class ApplicationStartupTest {
 
     @BeforeEach
     fun setup() {
-        com.example.clearUsersForTest()
+        TestDatabaseConfig.init()
+        TestDatabaseConfig.clearDatabase()
     }
 
     @Test
     fun testApplicationStartup() = testApplication {
         application {
-            configureRouting()
+            configureTestRouting()
             configureSerialization()
         }
 
@@ -35,7 +35,7 @@ class ApplicationStartupTest {
     @Test
     fun testApplicationConfiguration() = testApplication {
         application {
-            configureRouting()
+            configureTestRouting()
             configureSerialization()
         }
 
@@ -62,7 +62,7 @@ class ApplicationStartupTest {
         testApplication {
             application {
                 // Simulate what main() does
-                configureRouting()
+                configureTestRouting()
                 configureSerialization()
             }
 
@@ -76,7 +76,7 @@ class ApplicationStartupTest {
     @Test
     fun testAllPluginsLoaded() = testApplication {
         application {
-            configureRouting()
+            configureTestRouting()
             configureSerialization()
         }
 

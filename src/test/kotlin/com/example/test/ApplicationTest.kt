@@ -7,18 +7,24 @@ import io.ktor.http.*
 import io.ktor.server.testing.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import com.example.plugins.configureRouting
 import com.example.plugins.configureSerialization
 import kotlinx.serialization.json.Json
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.BeforeEach
 
 class ApplicationTest {
+
+    @BeforeEach
+    fun setup() {
+        TestDatabaseConfig.init()
+        TestDatabaseConfig.clearDatabase()
+    }
 
     @Test
     fun testRoot() = testApplication {
         application {
-            configureRouting()
+            configureTestRouting()
         }
 
         client.get("/").apply {
@@ -30,12 +36,12 @@ class ApplicationTest {
     @Test
     fun testUserEndpointsFlow() = testApplication {
         application {
-            configureRouting()
+            configureTestRouting()
             configureSerialization()
         }
 
-        // Clear users before test
-        com.example.clearUsersForTest()
+        // Database is already cleared in setup
+        TestDatabaseConfig.clearDatabase()
 
         // 1. Initially, no user
         client.get("/users").apply {

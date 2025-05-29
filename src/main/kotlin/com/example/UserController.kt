@@ -1,30 +1,19 @@
 package com.example
 
 import com.example.models.User
+import com.example.services.UserService
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-class UserController {
-    // インメモリストレージ（実際のアプリケーションではデータベースを使用する）
-    private val users = mutableListOf<User>()
-    private var userIdCounter = 1
-
-    // テスト用にユーザーリストをクリアする関数
-    fun clearUsersForTest() {
-        users.clear()
-        userIdCounter = 1
-    }
+class UserController(private val userService: UserService) {
 
     // 全ユーザーの取得
     suspend fun getAllUsers(call: ApplicationCall) {
-        if (users.isEmpty()) {
-            call.respond(HttpStatusCode.OK, emptyList<User>())
-        } else {
-            call.respond(HttpStatusCode.OK, users)
-        }
+        val users = userService.getAllUsers()
+        call.respond(HttpStatusCode.OK, users)
     }
 
     // IDでユーザーを取得
@@ -35,7 +24,7 @@ class UserController {
             return
         }
 
-        val user = users.find { it.id == id }
+        val user = userService.getUserById(id)
         if (user == null) {
             call.respond(HttpStatusCode.NotFound, "User not found")
         } else {
@@ -45,10 +34,13 @@ class UserController {
 
     // 新規ユーザーの作成
     suspend fun createUser(call: ApplicationCall) {
-        val user = call.receive<User>()
-        val newUser = user.copy(id = userIdCounter++)
-        users.add(newUser)
-        call.respond(HttpStatusCode.Created, newUser)
+        try {
+            val user = call.receive<User>()
+            val newUser = userService.createUser(user)
+            call.respond(HttpStatusCode.Created, newUser)
+        } catch (e: Exception) {
+            call.respond(HttpStatusCode.BadRequest, "Failed to create user: ${e.message}")
+        }
     }
 
     // ユーザーの更新
@@ -59,13 +51,17 @@ class UserController {
             return
         }
 
-        val userIndex = users.indexOfFirst { it.id == id }
-        if (userIndex == -1) {
-            call.respond(HttpStatusCode.NotFound, "User not found")
-        } else {
-            val updatedUser = call.receive<User>().copy(id = id)
-            users[userIndex] = updatedUser
-            call.respond(HttpStatusCode.OK, updatedUser)
+        try {
+            val user = call.receive<User>()
+            val updated = userService.updateUser(id, user)
+            if (updated) {
+                val updatedUser = user.copy(id = id)
+                call.respond(HttpStatusCode.OK, updatedUser)
+            } else {
+                call.respond(HttpStatusCode.NotFound, "User not found")
+            }
+        } catch (e: Exception) {
+            call.respond(HttpStatusCode.BadRequest, "Failed to update user: ${e.message}")
         }
     }
 
@@ -77,8 +73,8 @@ class UserController {
             return
         }
 
-        val removed = users.removeIf { it.id == id }
-        if (removed) {
+        val deleted = userService.deleteUser(id)
+        if (deleted) {
             call.respond(HttpStatusCode.NoContent)
         } else {
             call.respond(HttpStatusCode.NotFound, "User not found")
@@ -86,13 +82,8 @@ class UserController {
     }
 }
 
-// シングルトンインスタンス（テスト用にclearUsersForTestを呼び出せるようにする）
-val userController = UserController()
-
-// テスト用にユーザーリストをクリアする関数
-fun clearUsersForTest() {
-    userController.clearUsersForTest()
-}
+// シングルトンインスタンス
+val userController = UserController(UserService())
 
 fun Route.userRoutes() {
     route("/users") {
