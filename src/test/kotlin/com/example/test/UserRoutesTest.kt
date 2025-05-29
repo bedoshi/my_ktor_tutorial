@@ -195,4 +195,73 @@ class UserRoutesTest {
         assertTrue(responseText.contains("User 1"))
         assertTrue(responseText.contains("User 2"))
     }
+
+    @Test
+    fun testUpdateUserNotFound() = testApplication {
+        application {
+            configureRouting()
+            configureSerialization()
+        }
+
+        // Try to update a non-existent user
+        client.put("/users/999") {
+            contentType(ContentType.Application.Json)
+            setBody("""{"name": "Updated Name", "email": "updated@example.com", "age": 36}""")
+        }.apply {
+            assertEquals(HttpStatusCode.NotFound, status)
+        }
+    }
+
+    @Test
+    fun testDeleteUserNotFound() = testApplication {
+        application {
+            configureRouting()
+            configureSerialization()
+        }
+
+        // Try to delete a non-existent user
+        client.delete("/users/999").apply {
+            assertEquals(HttpStatusCode.NotFound, status)
+        }
+    }
+
+    @Test
+    fun testCreateUserInvalidJson() = testApplication {
+        application {
+            configureRouting()
+            configureSerialization()
+        }
+
+        // Send invalid JSON
+        client.post("/users") {
+            contentType(ContentType.Application.Json)
+            setBody("""{"invalid json}""")
+        }.apply {
+            assertEquals(HttpStatusCode.BadRequest, status)
+        }
+    }
+
+    @Test
+    fun testUpdateUserInvalidJson() = testApplication {
+        application {
+            configureRouting()
+            configureSerialization()
+        }
+
+        // First create a user
+        val createResponse = client.post("/users") {
+            contentType(ContentType.Application.Json)
+            setBody("""{"name": "Test User", "email": "test@example.com", "age": 25}""")
+        }
+        val createdUser = Json.decodeFromString<User>(createResponse.bodyAsText())
+        val userId = createdUser.id
+
+        // Try to update with invalid JSON
+        client.put("/users/$userId") {
+            contentType(ContentType.Application.Json)
+            setBody("""{"invalid json}""")
+        }.apply {
+            assertEquals(HttpStatusCode.BadRequest, status)
+        }
+    }
 }

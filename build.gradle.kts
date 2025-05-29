@@ -11,6 +11,7 @@ plugins {
     kotlin("jvm") version "2.1.10"
     id("io.ktor.plugin") version "2.3.3"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0"
+    jacoco
 }
 
 group = "com.example"
@@ -55,15 +56,21 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.9.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 
-    // Athenz ZPE
-    implementation("io.ktor:ktor-server-auth:2.0.0")
-    implementation("io.ktor:ktor-server-auth-jwt:2.0.0")
-    implementation("com.yahoo.athenz:athenz-zpe-lib:1.10.0")
 }
 
 tasks.test {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
 }
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+}
+
 kotlin {
     jvmToolchain(17)
 }

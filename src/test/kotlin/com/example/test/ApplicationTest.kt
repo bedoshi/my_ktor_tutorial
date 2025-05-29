@@ -34,6 +34,9 @@ class ApplicationTest {
             configureSerialization()
         }
 
+        // Clear users before test
+        com.example.clearUsersForTest()
+
         // 1. Initially, no user
         client.get("/users").apply {
             assertEquals(HttpStatusCode.OK, status)
