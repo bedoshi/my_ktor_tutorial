@@ -38,11 +38,23 @@ dependencies {
     implementation("io.ktor:ktor-server-auth:$ktor_version")
     implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")
 
-    // Database (optional)
+    // Database
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
-    implementation("com.h2database:h2:$h2_version")
+    implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
+    
+    // PostgreSQL driver
+    implementation("org.postgresql:postgresql:42.6.0")
+    
+    // H2 for testing
+    testImplementation("com.h2database:h2:$h2_version")
+    
+    // HikariCP for connection pooling
+    implementation("com.zaxxer:HikariCP:5.0.1")
+    
+    // Environment configuration
+    implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
 
     // Logging
     implementation("ch.qos.logback:logback-classic:$logback_version")
