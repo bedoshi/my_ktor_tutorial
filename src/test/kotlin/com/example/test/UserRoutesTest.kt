@@ -242,6 +242,48 @@ class UserRoutesTest {
     }
 
     @Test
+    fun testGetUserInvalidIdFormat() = testApplication {
+        application {
+            configureRouting()
+            configureSerialization()
+        }
+
+        // Try to get user with non-numeric ID
+        client.get("/users/abc").apply {
+            assertEquals(HttpStatusCode.BadRequest, status)
+        }
+    }
+
+    @Test
+    fun testUpdateUserInvalidIdFormat() = testApplication {
+        application {
+            configureRouting()
+            configureSerialization()
+        }
+
+        // Try to update user with non-numeric ID
+        client.put("/users/xyz") {
+            contentType(ContentType.Application.Json)
+            setBody("""{"name": "Test", "email": "test@example.com", "age": 25}""")
+        }.apply {
+            assertEquals(HttpStatusCode.BadRequest, status)
+        }
+    }
+
+    @Test
+    fun testDeleteUserInvalidIdFormat() = testApplication {
+        application {
+            configureRouting()
+            configureSerialization()
+        }
+
+        // Try to delete user with non-numeric ID
+        client.delete("/users/invalid").apply {
+            assertEquals(HttpStatusCode.BadRequest, status)
+        }
+    }
+
+    @Test
     fun testUpdateUserInvalidJson() = testApplication {
         application {
             configureRouting()
